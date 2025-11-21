@@ -1,0 +1,24 @@
+import { type Context } from 'telegraf';
+import { type Update } from 'telegraf/typings/core/types/typegram';
+
+import { type ICommand } from './types';
+import { type SchedulerService } from '../services/scheduler';
+
+export class ComplimentCommand implements ICommand {
+  private readonly message = 'You are the best';
+
+  constructor(private scheduler: SchedulerService) {}
+
+  public execute = async (ctx: Context<Update>): Promise<void> => {
+    const chatId = ctx.chat.id;
+
+    if (this.scheduler.hasChatId(chatId)) {
+      await ctx.reply('Вы уже подписаны на комплименты! 💕');
+      return;
+    }
+
+    this.scheduler.addChatId(chatId);
+    await ctx.reply('Теперь вы будете получать комплименты каждый час! 💕');
+  };
+}
+
